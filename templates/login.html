@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="login_title">Login - VolatForex Monitor Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .login-container {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #4fc3f7;
+        }
+        
+        .pro-text {
+            font-size: 0.6em;
+            color: #FFD700;
+            margin-left: 8px;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        
+        .login-form {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .divider {
+            margin: 20px 0;
+            text-align: center;
+            color: #666;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #444;
+        }
+        
+        .divider span {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 0 15px;
+        }
+        
+        .oauth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn-oauth {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-oauth:hover {
+            background: #3a3a3a;
+            border-color: #555;
+            transform: translateY(-1px);
+        }
+        
+        .footer-text {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .security-notice {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #28a745;
+        }
+        
+        .security-notice i {
+            font-size: 18px;
+            color: #28a745;
+        }
+        
+        .security-notice p {
+            margin: 0;
+            line-height: 1.4;
+        }
+        
+        .support-contact {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .support-contact a {
+            color: #4fc3f7;
+            text-decoration: none;
+        }
+        
+        .support-contact a:hover {
+            text-decoration: underline;
+        }
+        
+        .language-selector-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(79, 195, 247, 0.2);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            color: #4fc3f7;
+        }
+        
+        .language-selector-btn:hover {
+            background: rgba(79, 195, 247, 0.3);
+            transform: scale(1.05);
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(79, 195, 247, 0.2);
+            border-top: 4px solid #4fc3f7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            color: #4fc3f7;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .loading-subtext {
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 14px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" data-i18n="loading_text">Autenticando...</div>
+        <div class="loading-subtext" data-i18n="loading_subtext">Verificando suas credenciais</div>
+    </div>
+    
+    <button class="language-selector-btn" onclick="showLanguageSelector()" title="Selecionar Idioma">
+        <i class="fas fa-globe"></i>
+    </button>
+    
+    <div class="login-container">
+        <h1 class="logo">VolatForex Monitor <span class="pro-text">Pro</span></h1>
+        <p class="subtitle" data-i18n="login_subtitle">Faça login para acessar o sistema</p>
+        
+        {% if error %}
+        <div class="error-message" id="errorMessage" data-error-key="{{ error_key if error_key else '' }}">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form class="login-form" method="POST">
+            <div class="form-group">
+                <label for="email" data-i18n="email_label">Email:</label>
+                <input type="email" id="email" name="email" required placeholder="seu@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="remember_me" name="remember_me" style="width: auto;">
+                    <span data-i18n="remember_me">Lembrar login</span>
+                </label>
+            </div>
+            
+            <!-- Campo hidden para enviar idioma selecionado -->
+            <input type="hidden" id="language" name="language" value="pt">
+            
+            <button type="submit" class="btn btn-primary" data-i18n="login_button">Entrar</button>
+        </form>
+        
+        <div class="divider">
+            <span data-i18n="or_text">ou</span>
+        </div>
+        
+        <a href="https://volatforex.com/volatflow-2/" target="_blank" class="btn btn-secondary" data-i18n="acquire_access">Adquirir Acesso</a>
+        
+        <p class="footer-text" data-i18n="restricted_access">
+            Acesso restrito apenas para usuários com licença aprovada
+        </p>
+        
+        <div class="security-notice">
+            <i class="fas fa-shield-alt"></i>
+            <p><strong>Segurança Total:</strong> <span data-i18n="security_notice">Seus dados MT5 nunca saem da sua máquina. Processamento 100% local, sem armazenamento em nuvem.</span></p>
+        </div>
+        
+        <div class="support-contact">
+            <p><span data-i18n="need_help">Precisa de ajuda?</span> <a href="mailto:support@volatforex.com">support@volatforex.com</a></p>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
+    <script>
+        // Função para traduzir mensagem de erro
+        function translateErrorMessage() {
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                const errorKey = errorMessage.getAttribute('data-error-key');
+                if (errorKey && window.i18n && window.i18n.t) {
+                    const translation = window.i18n.t(errorKey);
+                    if (translation && translation !== errorKey) {
+                        errorMessage.textContent = translation;
+                    }
+                }
+            }
+        }
+        
+        // Mostrar popup de seleção de idioma na primeira visita
+        document.addEventListener('DOMContentLoaded', function() {
+            // Traduzir mensagem de erro se existir
+            translateErrorMessage();
+            
+            // Aplicar idioma salvo (do servidor ou localStorage)
+            const savedLanguage = '{{ saved_language }}' || localStorage.getItem('volatforex_language') || 'pt';
+            if (savedLanguage && savedLanguage !== 'None') {
+                // Aplica idioma
+                if (window.i18n && window.i18n.setLanguage) {
+                    window.i18n.setLanguage(savedLanguage);
+                }
+                // Atualiza campo hidden
+                const languageInput = document.getElementById('language');
+                if (languageInput) {
+                    languageInput.value = savedLanguage;
+                }
+            }
+            
+            // Verificar se é a primeira visita (não tem idioma salvo)
+            if (!localStorage.getItem('volatforex_language') && (!savedLanguage || savedLanguage === 'None')) {
+                // Aguardar um pouco para a página carregar completamente
+                setTimeout(() => {
+                    showLanguageSelector();
+                }, 500);
+            }
+            
+            // Adicionar evento de submit ao formulário de login
+            const loginForm = document.querySelector('.login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    // Validar email antes de mostrar loading
+                    const emailInput = document.getElementById('email');
+                    if (!emailInput.value || !emailInput.value.includes('@')) {
+                        return; // Deixa a validação HTML padrão funcionar
+                    }
+                    
+                    // Atualizar campo hidden com idioma atual antes de enviar
+                    const currentLanguage = localStorage.getItem('volatforex_language') || 'pt';
+                    const languageInput = document.getElementById('language');
+                    if (languageInput) {
+                        languageInput.value = currentLanguage;
+                    }
+                    
+                    // Mostrar loading overlay
+                    const loadingOverlay = document.getElementById('loadingOverlay');
+                    if (loadingOverlay) {
+                        loadingOverlay.classList.add('active');
+                    }
+                    
+                    // Desabilitar botão de submit para evitar múltiplos cliques
+                    const submitBtn = loginForm.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.style.opacity = '0.6';
+                        submitBtn.style.cursor = 'not-allowed';
+                    }
+                });
+            }
+        });
+        
+        // Atualizar mensagem de erro quando o idioma mudar
+        document.addEventListener('languageChanged', function() {
+            translateErrorMessage();
+            
+            // Atualizar campo hidden com novo idioma
+            const currentLanguage = localStorage.getItem('volatforex_language') || 'pt';
+            const languageInput = document.getElementById('language');
+            if (languageInput) {
+                languageInput.value = currentLanguage;
+            }
+        });
+    </script>
+</body>
+</html>

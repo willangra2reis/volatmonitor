@@ -1,0 +1,44 @@
+# ==========================================
+# Dependências para BUILD do Executável
+# ==========================================
+# Use este arquivo para instalar dependências de build:
+# pip install -r requirements_build.txt
+
+# --- Dependências Runtime (já existentes) ---
+Flask==2.3.3
+Flask-CORS==4.0.0
+waitress==2.1.2
+python-dotenv==1.0.0
+requests==2.31.0
+
+# --- Dependências para Janela Nativa ---
+pywebview==4.4.1
+
+# --- Dependências para Build com Nuitka ---
+nuitka==1.9.7
+ordered-set==4.1.0
+zstandard==0.22.0
+
+# --- Opcional: PyArmor para ofuscação adicional ---
+# pyarmor==8.5.9
+# Descomente a linha acima se quiser ofuscação extra
+
+# ==========================================
+# NOTAS IMPORTANTES:
+# ==========================================
+# 1. WebView2 Runtime (Windows):
+#    - Já vem instalado no Windows 10/11
+#    - Se Windows 7/8, baixar: https://developer.microsoft.com/microsoft-edge/webview2/
+#
+# 2. Compilador C (para Nuitka):
+#    - Windows: Instalar Visual Studio Build Tools
+#    - Download: https://visualstudio.microsoft.com/downloads/
+#    - Selecionar: "Desktop development with C++"
+#
+# 3. Tamanho do executável final:
+#    - Standalone: ~50-70MB (pasta com múltiplos arquivos)
+#    - Onefile: ~60-80MB (arquivo único)
+#
+# 4. Tempo de compilação:
+#    - Primeira vez: 10-20 minutos
+#    - Compilações subsequentes: 5-10 minutos

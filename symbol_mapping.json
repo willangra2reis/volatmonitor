@@ -1,0 +1,200 @@
+{
+    "mappings": {
+        "XAUUSD": {
+            "standard": "XAUUSD",
+            "aliases": ["GOLD", "XAU/USD", "XAUUSD.a", "XAUUSD.raw", "Gold", "XAUUSD.c", "XAU-USD"],
+            "description": "Ouro vs Dólar Americano",
+            "category": "Metais",
+            "digits": 2
+        },
+        "XAGUSD": {
+            "standard": "XAGUSD",
+            "aliases": ["SILVER", "XAG/USD", "XAGUSD.a", "Silver", "XAGUSD.c"],
+            "description": "Prata vs Dólar Americano",
+            "category": "Metais",
+            "digits": 3
+        },
+        "EURUSD": {
+            "standard": "EURUSD",
+            "aliases": ["EUR/USD", "EURUSDm", "EURUSD.c", "EUR-USD", "EURUSD.raw"],
+            "description": "Euro vs Dólar Americano",
+            "category": "Forex",
+            "digits": 5
+        },
+        "GBPUSD": {
+            "standard": "GBPUSD",
+            "aliases": ["GBP/USD", "GBPUSDm", "GBPUSD.c", "GBP-USD", "Cable"],
+            "description": "Libra Esterlina vs Dólar Americano",
+            "category": "Forex",
+            "digits": 5
+        },
+        "USDJPY": {
+            "standard": "USDJPY",
+            "aliases": ["USD/JPY", "USDJPYm", "USDJPY.c", "USD-JPY"],
+            "description": "Dólar Americano vs Iene Japonês",
+            "category": "Forex",
+            "digits": 3
+        },
+        "AUDUSD": {
+            "standard": "AUDUSD",
+            "aliases": ["AUD/USD", "AUDUSDm", "AUDUSD.c", "AUD-USD", "Aussie"],
+            "description": "Dólar Australiano vs Dólar Americano",
+            "category": "Forex",
+            "digits": 5
+        },
+        "USDCAD": {
+            "standard": "USDCAD",
+            "aliases": ["USD/CAD", "USDCADm", "USDCAD.c", "USD-CAD", "Loonie"],
+            "description": "Dólar Americano vs Dólar Canadense",
+            "category": "Forex",
+            "digits": 5
+        },
+        "USDCHF": {
+            "standard": "USDCHF",
+            "aliases": ["USD/CHF", "USDCHFm", "USDCHF.c", "USD-CHF", "Swissy"],
+            "description": "Dólar Americano vs Franco Suíço",
+            "category": "Forex",
+            "digits": 5
+        },
+        "NZDUSD": {
+            "standard": "NZDUSD",
+            "aliases": ["NZD/USD", "NZDUSDm", "NZDUSD.c", "NZD-USD", "Kiwi"],
+            "description": "Dólar Neozelandês vs Dólar Americano",
+            "category": "Forex",
+            "digits": 5
+        },
+        "EURGBP": {
+            "standard": "EURGBP",
+            "aliases": ["EUR/GBP", "EURGBPm", "EURGBP.c", "EUR-GBP"],
+            "description": "Euro vs Libra Esterlina",
+            "category": "Forex",
+            "digits": 5
+        },
+        "EURJPY": {
+            "standard": "EURJPY",
+            "aliases": ["EUR/JPY", "EURJPYm", "EURJPY.c", "EUR-JPY"],
+            "description": "Euro vs Iene Japonês",
+            "category": "Forex",
+            "digits": 3
+        },
+        "GBPJPY": {
+            "standard": "GBPJPY",
+            "aliases": ["GBP/JPY", "GBPJPYm", "GBPJPY.c", "GBP-JPY", "Guppy"],
+            "description": "Libra Esterlina vs Iene Japonês",
+            "category": "Forex",
+            "digits": 3
+        },
+        "XTIUSD": {
+            "standard": "XTIUSD",
+            "aliases": ["WTI", "CL", "USOIL", "CRUDE", "OIL", "XTIUSD.c", "CLc1"],
+            "description": "Petróleo WTI",
+            "category": "Commodities",
+            "digits": 2
+        },
+        "XBRUSD": {
+            "standard": "XBRUSD",
+            "aliases": ["BRENT", "UKOIL", "BRN", "XBRUSD.c"],
+            "description": "Petróleo Brent",
+            "category": "Commodities",
+            "digits": 2
+        },
+        "BTCUSD": {
+            "standard": "BTCUSD",
+            "aliases": ["BTC/USD", "BITCOIN", "BTCUSD.c", "BTC-USD", "XBTUSD"],
+            "description": "Bitcoin vs Dólar Americano",
+            "category": "Crypto",
+            "digits": 2
+        },
+        "ETHUSD": {
+            "standard": "ETHUSD",
+            "aliases": ["ETH/USD", "ETHEREUM", "ETHUSD.c", "ETH-USD"],
+            "description": "Ethereum vs Dólar Americano",
+            "category": "Crypto",
+            "digits": 2
+        },
+        "US30": {
+            "standard": "US30",
+            "aliases": ["DOW", "DJIA", "US30.c", "YM", "DJI"],
+            "description": "Dow Jones Industrial Average",
+            "category": "Índices",
+            "digits": 2
+        },
+        "US500": {
+            "standard": "US500",
+            "aliases": ["SPX", "SP500", "US500.c", "ES", "SPX500"],
+            "description": "S&P 500",
+            "category": "Índices",
+            "digits": 2
+        },
+        "NAS100": {
+            "standard": "NAS100",
+            "aliases": ["NASDAQ", "NDX", "NAS100.c", "NQ", "US100"],
+            "description": "NASDAQ 100",
+            "category": "Índices",
+            "digits": 2
+        },
+        "GER40": {
+            "standard": "GER40",
+            "aliases": ["DAX", "DE30", "GER40.c", "FDAX", "GER30"],
+            "description": "DAX 40",
+            "category": "Índices",
+            "digits": 2
+        }
+    },
+    "brokers": {
+        "XM": {
+            "XAUUSD": "GOLD",
+            "XAGUSD": "SILVER",
+            "EURUSD": "EURUSD",
+            "GBPUSD": "GBPUSD",
+            "USDJPY": "USDJPY",
+            "XTIUSD": "XTIUSD",
+            "BTCUSD": "BTCUSD"
+        },
+        "IC Markets": {
+            "XAUUSD": "XAUUSD",
+            "XAGUSD": "XAGUSD",
+            "EURUSD": "EURUSD",
+            "GBPUSD": "GBPUSD",
+            "USDJPY": "USDJPY",
+            "XTIUSD": "WTI",
+            "BTCUSD": "BTCUSD"
+        },
+        "Exness": {
+            "XAUUSD": "XAUUSD",
+            "XAGUSD": "XAGUSD",
+            "EURUSD": "EURUSDm",
+            "GBPUSD": "GBPUSDm",
+            "USDJPY": "USDJPYm",
+            "XTIUSD": "USOIL",
+            "BTCUSD": "BTCUSD"
+        },
+        "Admiral Markets": {
+            "XAUUSD": "XAUUSD.a",
+            "XAGUSD": "XAGUSD.a",
+            "EURUSD": "EURUSD",
+            "GBPUSD": "GBPUSD",
+            "USDJPY": "USDJPY",
+            "XTIUSD": "XTIUSD",
+            "BTCUSD": "BTCUSD"
+        },
+        "Pepperstone": {
+            "XAUUSD": "XAUUSD",
+            "XAGUSD": "XAGUSD",
+            "EURUSD": "EURUSD",
+            "GBPUSD": "GBPUSD",
+            "USDJPY": "USDJPY",
+            "XTIUSD": "XTIUSD",
+            "BTCUSD": "BTCUSD"
+        },
+        "FXCM": {
+            "XAUUSD": "XAU/USD",
+            "XAGUSD": "XAG/USD",
+            "EURUSD": "EUR/USD",
+            "GBPUSD": "GBP/USD",
+            "USDJPY": "USD/JPY",
+            "XTIUSD": "USOil",
+            "BTCUSD": "BTC/USD"
+        }
+    }
+}

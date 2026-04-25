@@ -1,0 +1,250 @@
+
+//+------------------------------------------------------------------+
+//|                                            WebhookMonitor.mq5 |
+//|                        Copyright 2025, MetaQuotes Software Corp. |
+//|                                             https://www.mql5.com |
+//+------------------------------------------------------------------+
+#property copyright "Copyright 2025, MetaQuotes Software Corp."
+#property link      "https://www.mql5.com"
+#property version   "1.00"
+#property description "EA que envia dados de balanço e últimos trades para webhook"
+
+#include <Trade\Trade.mqh>
+
+//--- Parâmetros de entrada
+input string WebhookURL = "https://n8ntype.volatforex.com/webhook-test/c6493c55-9f19-45a9-a94e-2731f7057791";
+input int    SendIntervalSeconds = 10; // Intervalo de envio em segundos
+input bool   UseGETMethod = false; // Se true, usa GET em vez de POST
+input bool   DebugMode = true; // Mostra logs detalhados
+
+//--- Variáveis globais
+datetime lastSendTime = 0;
+CTrade trade;
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    Print("EA WebhookMonitor iniciado com sucesso");
+    Print("URL do Webhook: ", WebhookURL);
+    Print("Intervalo de envio: ", SendIntervalSeconds, " segundos");
+    
+    lastSendTime = TimeCurrent();
+    
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    Print("EA WebhookMonitor finalizado");
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    datetime currentTime = TimeCurrent();
+    
+    // Verifica se já passou o tempo necessário para enviar os dados
+    if(currentTime - lastSendTime >= SendIntervalSeconds)
+    {
+        SendDataToWebhook();
+        lastSendTime = currentTime;
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Função para enviar dados para o webhook                          |
+//+------------------------------------------------------------------+
+void SendDataToWebhook()
+{
+    string jsonData = PrepareJsonData();
+    
+    if(jsonData != "")
+    {
+        char post[], result[];
+        string headers;
+        int res;
+        
+        if(UseGETMethod)
+        {
+            // Método GET com dados na URL (limitado)
+            string getUrl = WebhookURL + "?data=" + jsonData;
+            res = WebRequest("GET", getUrl, "", 5000, post, result, headers);
+        }
+        else
+        {
+            // Método POST com dados no corpo
+            StringToCharArray(jsonData, post, 0, WHOLE_ARRAY, CP_UTF8);
+            ArrayResize(post, ArraySize(post) - 1);
+            
+            headers = "Content-Type: application/json\r\n";
+            res = WebRequest("POST", WebhookURL, headers, 5000, post, result, headers);
+        }
+        
+        if(DebugMode)
+        {
+            Print("Tentando enviar dados via ", UseGETMethod ? "GET" : "POST");
+            Print("Tamanho dos dados: ", StringLen(jsonData), " caracteres");
+        }
+        
+        if(res == 200)
+        {
+            Print("✓ Dados enviados com sucesso para o webhook");
+            if(DebugMode)
+            {
+                Print("Resposta: ", CharArrayToString(result));
+            }
+        }
+        else
+        {
+            Print("✗ Erro ao enviar dados para o webhook. Código: ", res);
+            Print("Resposta: ", CharArrayToString(result));
+            
+            // Se POST falhou com 404, tenta GET automaticamente
+            if(res == 404 && !UseGETMethod)
+            {
+                Print("Tentando novamente com método GET...");
+                string getUrl = WebhookURL + "?balance=" + DoubleToString(AccountInfoDouble(ACCOUNT_BALANCE), 2) + 
+                               "&equity=" + DoubleToString(AccountInfoDouble(ACCOUNT_EQUITY), 2) +
+                               "&timestamp=" + IntegerToString(TimeCurrent());
+                
+                ArrayResize(post, 0);
+                res = WebRequest("GET", getUrl, "", 5000, post, result, headers);
+                
+                if(res == 200)
+                {
+                    Print("✓ Dados enviados com sucesso via GET");
+                }
+                else
+                {
+                    Print("✗ GET também falhou. Código: ", res);
+                    Print("Resposta GET: ", CharArrayToString(result));
+                }
+            }
+        }
+    }
+    else
+    {
+        Print("Erro ao preparar dados JSON");
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Função para preparar os dados em formato JSON                    |
+//+------------------------------------------------------------------+
+string PrepareJsonData()
+{
+    string json = "{";
+    
+    // Dados da conta
+    json += "\"account_info\": {";
+    json += "\"account_number\": " + IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN)) + ",";
+    json += "\"account_name\": \"" + AccountInfoString(ACCOUNT_NAME) + "\",";
+    json += "\"account_server\": \"" + AccountInfoString(ACCOUNT_SERVER) + "\",";
+    json += "\"account_currency\": \"" + AccountInfoString(ACCOUNT_CURRENCY) + "\",";
+    json += "\"account_balance\": " + DoubleToString(AccountInfoDouble(ACCOUNT_BALANCE), 2) + ",";
+    json += "\"account_equity\": " + DoubleToString(AccountInfoDouble(ACCOUNT_EQUITY), 2) + ",";
+    json += "\"account_margin\": " + DoubleToString(AccountInfoDouble(ACCOUNT_MARGIN), 2) + ",";
+    json += "\"account_free_margin\": " + DoubleToString(AccountInfoDouble(ACCOUNT_MARGIN_FREE), 2) + ",";
+    json += "\"account_profit\": " + DoubleToString(AccountInfoDouble(ACCOUNT_PROFIT), 2);
+    json += "},";
+    
+    // Timestamp
+    json += "\"timestamp\": \"" + TimeToString(TimeCurrent(), TIME_DATE|TIME_SECONDS) + "\",";
+    
+    // Últimos 30 trades
+    json += "\"last_trades\": [";
+    string tradesJson = GetLastTradesJson(200);
+    json += tradesJson;
+    json += "]";
+    
+    json += "}";
+    
+    return json;
+}
+
+//+------------------------------------------------------------------+
+//| Função para obter os últimos trades fechados em formato JSON    |
+//+------------------------------------------------------------------+
+string GetLastTradesJson(int maxTrades)
+{
+    string tradesJson = "";
+    int validTrades = 0;
+    
+    // Seleciona o histórico de negociações
+    if(HistorySelect(0, TimeCurrent()))
+    {
+        int totalDeals = HistoryDealsTotal();
+        
+        // Percorre do mais recente para o mais antigo
+        for(int i = totalDeals - 1; i >= 0 && validTrades < maxTrades; i--)
+        {
+            ulong ticket = HistoryDealGetTicket(i);
+            
+            if(ticket > 0)
+            {
+                ENUM_DEAL_TYPE dealType = (ENUM_DEAL_TYPE)HistoryDealGetInteger(ticket, DEAL_TYPE);
+                double profit = HistoryDealGetDouble(ticket, DEAL_PROFIT);
+                string symbol = HistoryDealGetString(ticket, DEAL_SYMBOL);
+                
+                // Filtra apenas trades de BUY/SELL que foram fechados (com lucro/prejuízo diferente de zero)
+                if((dealType == DEAL_TYPE_BUY || dealType == DEAL_TYPE_SELL) && 
+                   profit != 0.0 &&
+                   symbol != "" && StringLen(symbol) > 0)
+                {
+                    if(tradesJson != "")
+                        tradesJson += ",";
+                    
+                    tradesJson += "{";
+                    tradesJson += "\"ticket\": " + IntegerToString(ticket) + ",";
+                    tradesJson += "\"symbol\": \"" + symbol + "\",";
+                    tradesJson += "\"type\": \"" + DealTypeToString(dealType) + "\",";
+                    tradesJson += "\"volume\": " + DoubleToString(HistoryDealGetDouble(ticket, DEAL_VOLUME), 2) + ",";
+                    tradesJson += "\"price\": " + DoubleToString(HistoryDealGetDouble(ticket, DEAL_PRICE), 5) + ",";
+                    tradesJson += "\"profit\": " + DoubleToString(profit, 2) + ",";
+                    tradesJson += "\"swap\": " + DoubleToString(HistoryDealGetDouble(ticket, DEAL_SWAP), 2) + ",";
+                    tradesJson += "\"commission\": " + DoubleToString(HistoryDealGetDouble(ticket, DEAL_COMMISSION), 2) + ",";
+                    tradesJson += "\"time\": \"" + TimeToString((datetime)HistoryDealGetInteger(ticket, DEAL_TIME), TIME_DATE|TIME_SECONDS) + "\",";
+                    tradesJson += "\"comment\": \"" + HistoryDealGetString(ticket, DEAL_COMMENT) + "\"";
+                    tradesJson += "}";
+                    
+                    validTrades++;
+                }
+            }
+        }
+    }
+    
+    return tradesJson;
+}
+
+//+------------------------------------------------------------------+
+//| Função auxiliar para converter enum para string                  |
+//+------------------------------------------------------------------+
+string DealTypeToString(ENUM_DEAL_TYPE dealType)
+{
+    switch(dealType)
+    {
+        case DEAL_TYPE_BUY: return "BUY";
+        case DEAL_TYPE_SELL: return "SELL";
+        case DEAL_TYPE_BALANCE: return "BALANCE";
+        case DEAL_TYPE_CREDIT: return "CREDIT";
+        case DEAL_TYPE_CHARGE: return "CHARGE";
+        case DEAL_TYPE_CORRECTION: return "CORRECTION";
+        case DEAL_TYPE_BONUS: return "BONUS";
+        case DEAL_TYPE_COMMISSION: return "COMMISSION";
+        case DEAL_TYPE_COMMISSION_DAILY: return "COMMISSION_DAILY";
+        case DEAL_TYPE_COMMISSION_MONTHLY: return "COMMISSION_MONTHLY";
+        case DEAL_TYPE_COMMISSION_AGENT_DAILY: return "COMMISSION_AGENT_DAILY";
+        case DEAL_TYPE_COMMISSION_AGENT_MONTHLY: return "COMMISSION_AGENT_MONTHLY";
+        case DEAL_TYPE_INTEREST: return "INTEREST";
+        case DEAL_TYPE_BUY_CANCELED: return "BUY_CANCELED";
+        case DEAL_TYPE_SELL_CANCELED: return "SELL_CANCELED";
+        default: return "UNKNOWN";
+    }
+}
