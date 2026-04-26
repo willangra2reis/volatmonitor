@@ -44,11 +44,12 @@ echo.
 echo [INFO] Verificando arquivos do projeto...
 if not exist "ws7.py" (echo   [ERRO] ws7.py ausente & set /a ERRORS+=1) else (echo   [OK] ws7.py)
 if not exist "requirements.txt" (echo   [ERRO] requirements.txt ausente & set /a ERRORS+=1) else (echo   [OK] requirements.txt)
-if exist ".env" (echo   [OK] .env)
+if not exist ".env" (
+    echo   [ERRO] .env ausente (REQUERIDO)
+    echo   Crie: FLASK_SECRET_KEY=sua_chave_secreta_aqui
+    set /a ERRORS+=1
+) else (echo   [OK] .env)
 if exist ".env.example" (echo   [OK] .env.example (template))
-if not exist ".env" if not exist ".env.example" (
-    echo   [INFO] .env nao encontrado (chave fixa embutida - opcional)
-)
 
 REM 5. DEPENDENCIAS PYTHON
 echo.

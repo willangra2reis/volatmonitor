@@ -20,6 +20,16 @@ echo ╚════════════════════════
 echo.
 
 REM ==========================================
+REM  VERIFICAR ARQUIVO .ENV (opcional)
+REM ==========================================
+if not exist ".env" (
+    echo %WARN%  AVISO: Arquivo .env nao encontrado
+    echo    Modo desenvolvimento: usando chave padrao.
+    echo    Para producao, crie um .env com FLASK_SECRET_KEY.
+    echo.
+)
+
+REM ==========================================
 REM  1. TENTAR EXECUTAVEL COMPILADO
 REM ==========================================
 if exist "dist\VolatForex_Monitor_Pro.exe" (
@@ -133,8 +143,9 @@ if %errorlevel% neq 0 (
     echo.
     echo Diagnosticos:
     echo 1. Execute: verificar_python.bat
-    echo 2. Consulte: SOLUCAO_ERRO_WINDOWS11.md
-    echo 3. Execute o diagnostico: diagnosticar_windows11.bat
+    echo 2. Verifique se o arquivo .env esta configurado
+    echo 3. Consulte: SOLUCAO_ERRO_WINDOWS11.md
+    echo 4. Execute o diagnostico: diagnosticar_windows11.bat
     echo.
     pause
     exit /b 1

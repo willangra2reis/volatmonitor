@@ -82,10 +82,12 @@ python -m nuitka ^
     --include-module=credentials_manager ^
     --include-module=symbol_mapper ^
     --include-module=technical_indicators ^
-    --include-module=ws7 ^
+    --include-module=flask_storage ^
+    --include-module=supabase_client ^
     --include-data-dir=templates=templates ^
     --include-data-dir=static=static ^
     --include-data-file=symbol_mapping.json=symbol_mapping.json ^
+    --include-data-file=.env.dist=.env ^
     --output-dir=output ^
     --company-name="VolatForex" ^
     --product-name="VolatForex Monitor Pro" ^
