@@ -83,24 +83,16 @@ echo.
 echo [4/4] Instalando/verificando dependências da aplicação...
 echo.
 
-REM Criar requirements.txt se não existir
+REM Verificar se requirements.txt existe
 if not exist "requirements.txt" (
-    echo ⚠️  AVISO: requirements.txt não encontrado
-    echo    Criando arquivo de requisitos padrão...
     echo.
-    (
-        echo Flask==3.0.0
-        echo Werkzeug==3.0.1
-        echo Waitress==2.1.2
-        echo requests==2.31.0
-        echo python-dotenv==1.0.0
-        echo Jinja2==3.1.2
-        echo MarkupSafe==2.1.3
-        echo click==8.1.7
-        echo itsdangerous==2.1.2
-    ) > requirements.txt
-    echo ✅ Arquivo requirements.txt criado
+    echo ❌ ERRO: requirements.txt não encontrado!
     echo.
+    echo Certifique-se de que todos os arquivos do projeto foram extraídos.
+    echo Baixe novamente o pacote completo.
+    echo.
+    pause
+    exit /b 1
 )
 
 REM Instalar dependências
@@ -135,9 +127,10 @@ echo ║  - ou python ws7.py                                           ║
 echo ║  - ou clique em iniciar.bat                                   ║
 echo ║                                                                ║
 echo ║  Requisitos instalados:                                       ║
-echo ║  - Flask 3.0.0                                                ║
+echo ║  - Flask 2.3.3                                                ║
 echo ║  - Waitress 2.1.2                                             ║
 echo ║  - Requests 2.31.0                                            ║
+echo ║  - PyWebview 4.4.1                                            ║
 echo ║  - Python-dotenv 1.0.0                                        ║
 echo ║  - E todas as dependências necessárias                        ║
 echo ╚════════════════════════════════════════════════════════════════╝

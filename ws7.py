@@ -29,7 +29,8 @@ from symbol_mapper import SymbolMapper
 from technical_indicators import TechnicalIndicators, IndicatorHistory
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your-secret-key-change-this-in-production')
+# Chave secreta fixa embutida - nao requer arquivo .env para usuarios finais
+app.secret_key = 'ws7-volatforex-monitor-pro-secret-key-2026-fixed'
 CORS(app)
 
 # --- Armazenamento de Dados em Memória ---
@@ -4965,131 +4966,78 @@ if __name__ == '__main__':
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Página de login - Autenticação via Google Apps Script API"""
+    """Página de login - Login simples por email (sem verificação externa)"""
     if request.method == 'POST':
         try:
             email = request.form.get('email')
             remember_me = request.form.get('remember_me') == 'on'
-            language = request.form.get('language', 'pt')  # Captura idioma do formulário
-            
+            language = request.form.get('language', 'pt')
+
             if not email:
-                return render_template('login.html', 
+                return render_template('login.html',
                                      error='Email é obrigatório',
                                      error_key='error_email_required')
-            
-            # Verifica o usuário na API do Google
-            user_data = check_user_status(email)
-            
-            if user_data:
-                # Usuário encontrado - verifica se tem PURCHASE_APPROVED
-                if user_data.get('status') == 'PURCHASE_APPROVED':
-                    # Gera token único de sessão com timestamps
-                    session_token = generate_session_token()
-                    import time
-                    _valid_session_tokens[session_token] = {
-                        "created_at": time.time(),
-                        "last_validated": time.time(),
-                        "email": email
-                    }
-                    
-                    # Usuário aprovado - salva TODOS os dados na sessão (evita requisições futuras)
-                    session['session_token'] = session_token  # Token único para validação
-                    session['user_email'] = email
-                    session['user_name'] = user_data.get('pnome', '')
-                    session['user_full_name'] = user_data.get('nomecompleto', '')
-                    session['user_status'] = user_data.get('status')  # Salva status na sessão
-                    session['user_data_timestamp'] = user_data.get('data', '')
-                    session.permanent = True
-                    
-                    # Se "lembrar login" estiver marcado, salva email e idioma em arquivo local
-                    if remember_me:
-                        save_user_credentials(email, language)
-                        print(f"[LOGIN] 💾 Credenciais salvas - Email: {email} | Idioma: {language}")
-                    else:
-                        # Se não marcou, remove credenciais salvas anteriormente
-                        clear_saved_credentials()
-                    
-                    print(f"[LOGIN] ✅ {email} autenticado - Token: {session_token[:16]}... (sessão segura)")
-                    return redirect(url_for('dashboard'))
-                else:
-                    # Usuário existe mas não está aprovado
-                    print(f"[LOGIN] ⚠️ {email} não aprovado - Status: {user_data.get('status')}")
-                    # Remove credenciais salvas se houver (usuário perdeu acesso)
-                    clear_saved_credentials()
-                    # Redireciona para página de acesso negado com nome do usuário
-                    session['pending_user_name'] = user_data.get('pnome', '')
-                    session['pending_user_email'] = email
-                    return redirect(url_for('access_denied'))
+
+            # Login simples: aceita qualquer email com formato valido
+            import time
+            session_token = generate_session_token()
+            _valid_session_tokens[session_token] = {
+                "created_at": time.time(),
+                "last_validated": time.time(),
+                "email": email
+            }
+
+            # Salva dados na sessao
+            session['session_token'] = session_token
+            session['user_email'] = email
+            session['user_name'] = email.split('@')[0]  # Nome simples do email
+            session['user_full_name'] = email
+            session['user_status'] = 'APPROVED'
+            session.permanent = True
+
+            # Salva credenciais localmente se "lembrar login"
+            if remember_me:
+                save_user_credentials(email, language)
+                print(f"[LOGIN] Credenciais salvas - Email: {email} | Idioma: {language}")
             else:
-                # Usuário não encontrado
-                print(f"[LOGIN] ❌ {email} não encontrado no sistema")
-                # Remove credenciais salvas se houver
                 clear_saved_credentials()
-                return render_template('login.html', 
-                                     error='Email não encontrado no sistema. Verifique seu email ou adquira o acesso.',
-                                     error_key='error_email_not_found')
-                
+
+            print(f"[LOGIN] {email} autenticado - Token: {session_token[:16]}...")
+            return redirect(url_for('dashboard'))
+
         except Exception as e:
             print(f"[LOGIN] Erro no login: {e}")
-            return render_template('login.html', 
+            return render_template('login.html',
                                  error='Erro ao fazer login. Tente novamente.',
                                  error_key='error_login_failed')
-    
-    # Verifica se há credenciais salvas para login automático
+
+    # Login automatico com credenciais salvas
     saved_creds = get_saved_credentials()
     if saved_creds:
         saved_email = saved_creds.get('email')
         saved_language = saved_creds.get('language', 'pt')
-        
         try:
-            print(f"[LOGIN] 🔍 Tentando login automático - Email: {saved_email} | Idioma: {saved_language}")
-            # Tenta fazer login automático (Única requisição à API)
-            user_data = check_user_status(saved_email)
-            
-            if user_data and user_data.get('status') == 'PURCHASE_APPROVED':
-                # Gera token único de sessão com timestamps
-                session_token = generate_session_token()
-                import time
-                _valid_session_tokens[session_token] = {
-                    "created_at": time.time(),
-                    "last_validated": time.time(),
-                    "email": saved_email
-                }
-                
-                # Salva TODOS os dados na sessão
-                session['session_token'] = session_token
-                session['user_email'] = saved_email
-                session['user_name'] = user_data.get('pnome', '')
-                session['user_full_name'] = user_data.get('nomecompleto', '')
-                session['user_status'] = user_data.get('status')
-                session['user_data_timestamp'] = user_data.get('data', '')
-                session['saved_language'] = saved_language  # Salva idioma na sessão para aplicar no dashboard
-                session.permanent = True
-                print(f"[LOGIN] ✅ Login automático bem-sucedido: {saved_email}")
-                print(f"[LOGIN] 🌐 Idioma salvo na sessão: {saved_language}")
-                return redirect(url_for('dashboard'))
-            else:
-                # Credenciais salvas não são mais válidas
-                print(f"[LOGIN] ⚠️ Credenciais salvas inválidas - removendo")
-                clear_saved_credentials()
-                # Mostra tela de login com mensagem
-                if user_data:
-                    # Usuário existe mas não está mais aprovado
-                    session['pending_user_name'] = user_data.get('pnome', '')
-                    session['pending_user_email'] = saved_email
-                    return redirect(url_for('access_denied'))
-                else:
-                    # Usuário não existe mais
-                    return render_template('login.html', 
-                                         error='Sua sessão expirou. Faça login novamente.',
-                                         error_key='error_session_expired')
+            import time
+            session_token = generate_session_token()
+            _valid_session_tokens[session_token] = {
+                "created_at": time.time(),
+                "last_validated": time.time(),
+                "email": saved_email
+            }
+            session['session_token'] = session_token
+            session['user_email'] = saved_email
+            session['user_name'] = saved_email.split('@')[0]
+            session['user_full_name'] = saved_email
+            session['user_status'] = 'APPROVED'
+            session['saved_language'] = saved_language
+            session.permanent = True
+            print(f"[LOGIN] Login automatico: {saved_email}")
+            return redirect(url_for('dashboard'))
         except Exception as e:
-            print(f"[LOGIN] ❌ Erro ao fazer login automático: {e}")
-            # Remove credenciais corrompidas
+            print(f"[LOGIN] Erro login automatico: {e}")
             clear_saved_credentials()
-            pass  # Se falhar, continua para página de login normal
-    
-    # Carrega idioma salvo para pré-selecionar na tela de login
+
+    # Carrega idioma salvo para pre-selecionar na tela de login
     saved_language = get_saved_language()
     return render_template('login.html', saved_language=saved_language)
 
@@ -5142,7 +5090,7 @@ if __name__ == '__main__':
     print(f"🔐 Login: http://127.0.0.1:5000/login")
     print(f"📊 API Status: http://127.0.0.1:5000/api/latest")
     print("⚡ Servidor otimizado para alta performance")
-    print("🔒 Sistema com autenticação Google Apps Script ativado")
+    print("🔒 Login simples por email ativado")
     print("="*60 + "\n")
     
     # Configurações otimizadas do Waitress

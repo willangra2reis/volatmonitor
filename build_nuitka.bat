@@ -77,10 +77,15 @@ python -m nuitka ^
     --include-package=waitress ^
     --include-package=webview.platforms.winforms ^
     --include-package=requests ^
+    --include-module=auth_middleware ^
+    --include-module=google_auth ^
+    --include-module=credentials_manager ^
+    --include-module=symbol_mapper ^
+    --include-module=technical_indicators ^
+    --include-module=ws7 ^
     --include-data-dir=templates=templates ^
     --include-data-dir=static=static ^
     --include-data-file=symbol_mapping.json=symbol_mapping.json ^
-    --include-data-file=.env=.env ^
     --output-dir=output ^
     --company-name="VolatForex" ^
     --product-name="VolatForex Monitor Pro" ^
