@@ -43,13 +43,13 @@ class SymbolMapper:
                     self.mappings = config.get('mappings', {})
                     self.broker_mappings = config.get('brokers', {})
                     self._build_reverse_mappings()
-                    print(f"[SYMBOL MAPPER] ✅ Configuração carregada: {len(self.mappings)} símbolos, {len(self.broker_mappings)} corretoras")
+                    print(f"[SYMBOL MAPPER] [OK] Configuracao carregada: {len(self.mappings)} simbolos, {len(self.broker_mappings)} corretoras")
                     return True
             else:
-                print(f"[SYMBOL MAPPER] ⚠️ Arquivo {self.config_path} não encontrado")
+                print(f"[SYMBOL MAPPER] [AVISO] Arquivo {self.config_path} nao encontrado")
                 return False
         except Exception as e:
-            print(f"[SYMBOL MAPPER] ❌ Erro ao carregar configuração: {e}")
+            print(f"[SYMBOL MAPPER] [ERRO] Erro ao carregar configuracao: {e}")
             return False
     
     def _build_reverse_mappings(self):
@@ -59,18 +59,18 @@ class SymbolMapper:
         self.reverse_mappings = {}
         
         for standard, data in self.mappings.items():
-            # O próprio símbolo padrão
+            # O proprio simbolo padrao
             self.reverse_mappings[standard.upper()] = standard
             
             # Todos os aliases
             for alias in data.get('aliases', []):
                 self.reverse_mappings[alias.upper()] = standard
         
-        print(f"[SYMBOL MAPPER] 📋 Mapeamento reverso construído: {len(self.reverse_mappings)} entradas")
+        print(f"[SYMBOL MAPPER] [INFO] Mapeamento reverso construido: {len(self.reverse_mappings)} entradas")
     
     def normalize(self, symbol: str) -> str:
         """
-        Normaliza símbolo para formato padrão
+        Normaliza simbolo para formato padrao
         
         Args:
             symbol: Símbolo a ser normalizado (ex: "GOLD", "XAU/USD", "XAUUSD.a")

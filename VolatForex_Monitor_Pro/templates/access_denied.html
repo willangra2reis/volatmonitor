@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="access_denied_title">Acesso Negado - VolatForex Monitor Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .access-denied-container {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+        }
+        
+        .icon {
+            font-size: 4em;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 2em;
+            color: #dc3545;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .message {
+            color: #ccc;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+        
+        .details {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .details h3 {
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+        
+        .details ul {
+            color: #ccc;
+            padding-left: 20px;
+        }
+        
+        .details li {
+            margin-bottom: 8px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .footer-text {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Language Selector Button */
+        .language-selector-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(79, 195, 247, 0.1);
+            border: 2px solid #4fc3f7;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.3em;
+        }
+        
+        .language-selector-btn:hover {
+            background: rgba(79, 195, 247, 0.2);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="access-denied-container">
+        <!-- Language Selector Button -->
+        <button class="language-selector-btn" onclick="window.i18n.showLanguageSelector()" title="Select Language">
+            🌐
+        </button>
+        
+        <div class="icon">🚫</div>
+        
+        <h1 class="title" data-i18n="access_denied_header">Acesso Negado</h1>
+        
+        {% if user_name %}
+        <p class="message">
+            <span data-i18n="access_denied_hello">Olá</span> <strong>{{ user_name }}</strong>! 👋<br><br>
+            <span data-i18n="access_denied_message">Identificamos sua conta, mas ela ainda não possui autorização para acessar o</span> <strong>VolatForex Monitor Pro</strong>.
+        </p>
+        {% else %}
+        <p class="message">
+            <span data-i18n="access_denied_message_no_user">Sua conta não possui autorização para acessar o</span> <strong>VolatForex Monitor Pro</strong>.
+        </p>
+        {% endif %}
+        
+        <div class="details">
+            <h3>
+                {% if user_name %}
+                    {{ user_name }}, <span data-i18n="access_denied_to_get_access">para obter acesso completo:</span>
+                {% else %}
+                    <span data-i18n="access_denied_to_get_access_no_user">Para obter acesso completo:</span>
+                {% endif %}
+            </h3>
+            <ul>
+                <li data-i18n="access_denied_reason_1">✅ Sua assinatura expirou (venceu)</li>
+                <li data-i18n="access_denied_reason_2">⏳ Sua assinatura foi cancelada por falta de pagamento</li>
+                <li data-i18n="access_denied_reason_3">🎯 Adquira o acesso clicando no botão abaixo</li>
+            </ul>
+        </div>
+        
+        <div class="actions">
+            <a href="https://volatforex.com/volatflow-2/" target="_blank" class="btn btn-primary" data-i18n="access_denied_acquire_button">🚀 Adquirir o Acesso</a>
+            <a href="{{ url_for('login') }}" class="btn btn-secondary" data-i18n="access_denied_back_button">🔄 Voltar ao Login</a>
+        </div>
+        
+        <p class="footer-text">
+            <span data-i18n="access_denied_footer">Após a compra, seu acesso será liberado automaticamente. Dúvidas?</span> <a href="mailto:support@volatforex.com" style="color: #4fc3f7;">support@volatforex.com</a>
+        </p>
+    </div>
+    
+    <!-- i18n System -->
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
+</body>
+</html>
