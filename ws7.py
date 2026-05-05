@@ -996,7 +996,86 @@ HTML_TEMPLATE = """
         .dark-mode .chart-sidebar {
             background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
         }
-        
+
+        .chart-sidebar.collapsed {
+            width: 0;
+            padding: 0;
+            border-right: none;
+            overflow: hidden;
+            opacity: 0;
+            transition: width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+        }
+
+        .chart-main-area.expanded {
+            flex: 1 1 100%;
+            width: 100%;
+        }
+
+        .sidebar-toggle-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1001;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sidebar-toggle-btn:hover {
+            background: rgba(76, 175, 80, 1);
+        }
+
+        .chart-sidebar.collapsed + .chart-main-area .sidebar-toggle-btn {
+            left: 10px;
+        }
+
+        .chart-sidebar:not(.collapsed) + .chart-main-area .sidebar-toggle-btn {
+            display: none;
+        }
+
+        .chart-main-area .sidebar-toggle-btn {
+            display: none;
+        }
+
+        .chart-sidebar.collapsed + .chart-main-area .sidebar-toggle-btn {
+            display: flex;
+        }
+
+        /* Quando sidebar colapsada, mostra botão flutuante na main-area */
+        .sidebar-floating-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1001;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sidebar-floating-btn:hover {
+            background: rgba(76, 175, 80, 1);
+        }
+
+        .chart-sidebar.collapsed ~ .chart-main-area .sidebar-floating-btn {
+            display: flex;
+        }
+
         .chart-modal-header {
             padding: 15px 20px;
             border-bottom: 1px solid rgba(76, 175, 80, 0.2);
@@ -1226,6 +1305,7 @@ HTML_TEMPLATE = """
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
         
         .chart-container-wrapper {
@@ -1448,7 +1528,10 @@ HTML_TEMPLATE = """
             <span class="close-button" onclick="closeAdvancedChart()">&times;</span>
             
             <!-- Sidebar Esquerda -->
-            <div class="chart-sidebar">
+            <div class="chart-sidebar" id="chart-sidebar">
+                <button class="sidebar-toggle-btn" onclick="toggleChartSidebar()" title="Ocultar painel">
+                    <i class="fas fa-chevron-left"></i> Ocultar
+                </button>
                 <!-- Header -->
                 <div class="chart-modal-header">
                     <!-- Barra de Progresso (aparece apenas se necessário) -->
@@ -1551,6 +1634,9 @@ HTML_TEMPLATE = """
             
             <!-- Área Principal dos Gráficos -->
             <div class="chart-main-area">
+                <button class="sidebar-floating-btn" onclick="toggleChartSidebar()" title="Mostrar painel">
+                    <i class="fas fa-chevron-right"></i> Mostrar Painel
+                </button>
                 <!-- Gráficos -->
                 <div class="chart-container-wrapper">
                     <!-- Gráfico Principal: Preço + Médias Móveis -->
@@ -3526,6 +3612,14 @@ HTML_TEMPLATE = """
             if (chartUpdateInterval) {
                 clearInterval(chartUpdateInterval);
                 chartUpdateInterval = null;
+            }
+        }
+
+        // Função para ocultar/mostrar sidebar do gráfico
+        function toggleChartSidebar() {
+            const sidebar = document.getElementById('chart-sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('collapsed');
             }
         }
         
