@@ -27,7 +27,7 @@ class CredentialsManager:
         # Cria pasta se não existir
         if not os.path.exists(credentials_folder):
             os.makedirs(credentials_folder)
-            print(f"[CREDENTIALS] 📁 Pasta de credenciais criada: {credentials_folder}")
+            print(f"[CREDENTIALS] [INFO] Pasta de credenciais criada: {credentials_folder}")
     
     def _encode(self, text):
         """Codifica texto em base64 (ofuscação simples)"""
@@ -61,11 +61,11 @@ class CredentialsManager:
             with open(self.credentials_file, 'w') as f:
                 json.dump(data, f)
             
-            print(f"[CREDENTIALS] ✅ Credenciais salvas - Email: {email} | Idioma: {language}")
+            print(f"[CREDENTIALS] [OK] Credenciais salvas - Email: {email} | Idioma: {language}")
             return True
             
         except Exception as e:
-            print(f"[CREDENTIALS] ❌ Erro ao salvar credenciais: {e}")
+            print(f"[CREDENTIALS] [ERRO] Erro ao salvar credenciais: {e}")
             return False
     
     def load_credentials(self):
@@ -77,7 +77,7 @@ class CredentialsManager:
         """
         try:
             if not os.path.exists(self.credentials_file):
-                print("[CREDENTIALS] ℹ️ Nenhuma credencial salva encontrada")
+                print("[CREDENTIALS] [INFO] Nenhuma credencial salva encontrada")
                 return None
             
             with open(self.credentials_file, 'r') as f:
@@ -87,11 +87,11 @@ class CredentialsManager:
             email = self._decode(data.get('email', ''))
             
             if not email:
-                print("[CREDENTIALS] ⚠️ Credencial corrompida")
+                print("[CREDENTIALS] [AVISO] Credencial corrompida")
                 return None
             
             language = data.get('language', 'pt')
-            print(f"[CREDENTIALS] 📧 Credencial carregada - Email: {email} | Idioma: {language}")
+            print(f"[CREDENTIALS] [OK] Credencial carregada - Email: {email} | Idioma: {language}")
             
             return {
                 'email': email,
@@ -100,7 +100,7 @@ class CredentialsManager:
             }
             
         except Exception as e:
-            print(f"[CREDENTIALS] ❌ Erro ao carregar credenciais: {e}")
+            print(f"[CREDENTIALS] [ERRO] Erro ao carregar credenciais: {e}")
             return None
     
     def clear_credentials(self):
@@ -113,12 +113,12 @@ class CredentialsManager:
         try:
             if os.path.exists(self.credentials_file):
                 os.remove(self.credentials_file)
-                print("[CREDENTIALS] 🗑️ Credenciais removidas")
+                print("[CREDENTIALS] [OK] Credenciais removidas")
                 return True
             return False
             
         except Exception as e:
-            print(f"[CREDENTIALS] ❌ Erro ao remover credenciais: {e}")
+            print(f"[CREDENTIALS] [ERRO] Erro ao remover credenciais: {e}")
             return False
     
     def has_saved_credentials(self):
@@ -209,4 +209,4 @@ if __name__ == "__main__":
     print("\n5. Verificando após limpar...")
     print(f"   Existe: {has_saved_login()}")
     
-    print("\n✅ Testes concluídos!")
+    print("\n[OK] Testes concluidos!")

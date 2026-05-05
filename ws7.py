@@ -4397,7 +4397,7 @@ def dashboard():
     
     # Obter idioma salvo da sessão (se houver)
     saved_language = session.get('saved_language', '')
-    print(f"[DASHBOARD] 🌐 Renderizando dashboard - Idioma da sessão: '{saved_language}'")
+    print(f"[DASHBOARD] [INFO] Renderizando dashboard - Idioma da sessao: '{saved_language}'")
     
     # Passar dados para o template
     return render_template_string(
@@ -4875,14 +4875,14 @@ def open_browser():
 
 if __name__ == '__main__':
     print("=" * 60)
-    print("🚀 SERVIDOR WEBHOOK LOCAL INICIADO")
+    print("[INIT] SERVIDOR WEBHOOK LOCAL INICIADO")
     print("=" * 60)
-    print(f"📊 Dashboard: http://localhost:5000")
-    print(f"🔗 Webhook URL: http://localhost:5000/webhook")
-    print(f"📡 API Status: http://localhost:5000/api/status")
+    print(f"[INIT] Dashboard: http://localhost:5000")
+    print(f"[INIT] Webhook URL: http://localhost:5000/webhook")
+    print(f"[INIT] API Status: http://localhost:5000/api/status")
     print("=" * 60)
-    print("💡 Configure o EA com a URL: http://localhost:5000/webhook")
-    print("🌐 O navegador será aberto automaticamente...")
+    print("[INIT] Configure o EA com a URL: http://localhost:5000/webhook")
+    print("[INIT] O navegador sera aberto automaticamente...")
     print("=" * 60)
     
     # Abre o navegador em uma thread separada
@@ -5065,12 +5065,12 @@ def login():
                 session['user_data_timestamp'] = user_data.get('data', '')
                 session['saved_language'] = saved_language  # Salva idioma na sessão para aplicar no dashboard
                 session.permanent = True
-                print(f"[LOGIN] ✅ Login automático bem-sucedido: {saved_email}")
-                print(f"[LOGIN] 🌐 Idioma salvo na sessão: {saved_language}")
+                print(f"[LOGIN] [OK] Login automatico bem-sucedido: {saved_email}")
+                print(f"[LOGIN] [INFO] Idioma salvo na sessao: {saved_language}")
                 return redirect(url_for('dashboard'))
             else:
                 # Credenciais salvas não são mais válidas
-                print(f"[LOGIN] ⚠️ Credenciais salvas inválidas - removendo")
+                print(f"[LOGIN] [AVISO] Credenciais salvas invalidas - removendo")
                 clear_saved_credentials()
                 # Mostra tela de login com mensagem
                 if user_data:
@@ -5136,13 +5136,13 @@ def access_denied():
 if __name__ == '__main__':
     # Configuração do Waitress para melhor performance e robustez
     print("\n" + "="*60)
-    print("🚀 Iniciando servidor Waitress (Produção)")
-    print(f"📡 Servidor disponível em: http://127.0.0.1:5000")
-    print(f"🌐 Dashboard: http://127.0.0.1:5000")
-    print(f"🔐 Login: http://127.0.0.1:5000/login")
-    print(f"📊 API Status: http://127.0.0.1:5000/api/latest")
-    print("⚡ Servidor otimizado para alta performance")
-    print("🔒 Sistema com autenticação Google Apps Script ativado")
+    print("[INIT] Iniciando servidor Waitress (Producao)")
+    print(f"[INIT] Servidor disponivel em: http://127.0.0.1:5000")
+    print(f"[INIT] Dashboard: http://127.0.0.1:5000")
+    print(f"[INIT] Login: http://127.0.0.1:5000/login")
+    print(f"[INIT] API Status: http://127.0.0.1:5000/api/latest")
+    print("[INIT] Servidor otimizado para alta performance")
+    print("[INIT] Sistema com autenticacao Google Apps Script ativado")
     print("="*60 + "\n")
     
     # Configurações otimizadas do Waitress

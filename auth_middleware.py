@@ -93,7 +93,7 @@ def login_required(f):
                 
                 if not user_data:
                     # Usuário não encontrado - invalida sessão
-                    print(f"[AUTH] ❌ Usuário {user_email} não encontrado na revalidação")
+                    print(f"[AUTH] [ERRO] Usuario {user_email} nao encontrado na revalidacao")
                     invalidate_session_token(session_token)
                     session['_session_invalidated'] = True  # Marca como invalidada
                     session.clear()
@@ -103,7 +103,7 @@ def login_required(f):
                 
                 if new_status != 'PURCHASE_APPROVED':
                     # Status mudou - não está mais aprovado
-                    print(f"[AUTH] ⚠️ Status de {user_email} mudou para: {new_status} - Sessão invalidada")
+                    print(f"[AUTH] [AVISO] Status de {user_email} mudou para: {new_status} - Sessao invalidada")
                     invalidate_session_token(session_token)
                     
                     # Marca sessão como invalidada ANTES de limpar
@@ -123,7 +123,7 @@ def login_required(f):
                 session['user_name'] = user_data.get('pnome', '')
                 session['user_full_name'] = user_data.get('nomecompleto', '')
                 update_token_validation(session_token, user_email)
-                print(f"[AUTH] ✅ Status revalidado: {user_email} - PURCHASE_APPROVED")
+                print(f"[AUTH] [OK] Status revalidado: {user_email} - PURCHASE_APPROVED")
             
             # Verifica se o status é PURCHASE_APPROVED
             if session.get('user_status') != 'PURCHASE_APPROVED':
