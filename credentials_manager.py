@@ -130,6 +130,58 @@ class CredentialsManager:
         """
         return os.path.exists(self.credentials_file)
 
+    def save_chart_config(self, email, config):
+        """
+        Salva configuracoes do grafico avancado para um usuario
+        
+        Args:
+            email: Email do usuario
+            config: Dicionario com configuracoes do grafico
+            
+        Returns:
+            bool: True se salvou com sucesso
+        """
+        try:
+            config_file = os.path.join(self.credentials_folder, 'chart_configs.json')
+            configs = {}
+            if os.path.exists(config_file):
+                with open(config_file, 'r') as f:
+                    configs = json.load(f)
+            
+            configs[email] = config
+            
+            with open(config_file, 'w') as f:
+                json.dump(configs, f)
+            
+            print(f"[CREDENTIALS] [OK] Config grafico salva para: {email}")
+            return True
+        except Exception as e:
+            print(f"[CREDENTIALS] [ERRO] Erro ao salvar config grafico: {e}")
+            return False
+
+    def load_chart_config(self, email):
+        """
+        Carrega configuracoes do grafico avancado para um usuario
+        
+        Args:
+            email: Email do usuario
+            
+        Returns:
+            dict: Configuracoes do grafico ou None
+        """
+        try:
+            config_file = os.path.join(self.credentials_folder, 'chart_configs.json')
+            if not os.path.exists(config_file):
+                return None
+            
+            with open(config_file, 'r') as f:
+                configs = json.load(f)
+            
+            return configs.get(email, None)
+        except Exception as e:
+            print(f"[CREDENTIALS] [ERRO] Erro ao carregar config grafico: {e}")
+            return None
+
 
 # Instância global
 credentials_manager = CredentialsManager()
@@ -177,6 +229,30 @@ def clear_saved_credentials():
 def has_saved_login():
     """Verifica se há login salvo"""
     return credentials_manager.has_saved_credentials()
+
+
+# Funções para configurações do gráfico avançado
+def save_user_chart_config(email, config):
+    """
+    Salva configurações do gráfico avançado para um usuário
+    
+    Args:
+        email: Email do usuário
+        config: Dicionário com configurações
+    """
+    return credentials_manager.save_chart_config(email, config)
+
+def get_user_chart_config(email):
+    """
+    Carrega configurações do gráfico avançado para um usuário
+    
+    Args:
+        email: Email do usuário
+        
+    Returns:
+        dict: Configurações salvas ou None
+    """
+    return credentials_manager.load_chart_config(email)
 
 
 # Manter compatibilidade com código antigo

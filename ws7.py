@@ -20,7 +20,7 @@ from auth_middleware import login_required, api_login_required, check_purchase_a
 from google_auth import check_user_status, get_user_first_name, get_user_messages, get_user_notifications
 
 # Importação do Gerenciador de Credenciais
-from credentials_manager import save_user_credentials, get_saved_credentials, get_saved_email, get_saved_language, clear_saved_credentials, has_saved_login
+from credentials_manager import save_user_credentials, get_saved_credentials, get_saved_email, get_saved_language, clear_saved_credentials, has_saved_login, save_user_chart_config, get_user_chart_config
 
 # Importação do Symbol Mapper
 from symbol_mapper import SymbolMapper
@@ -1529,8 +1529,8 @@ HTML_TEMPLATE = """
             
             <!-- Sidebar Esquerda -->
             <div class="chart-sidebar" id="chart-sidebar">
-                <button class="sidebar-toggle-btn" onclick="toggleChartSidebar()" title="Ocultar painel">
-                    <i class="fas fa-chevron-left"></i> Ocultar
+                <button class="sidebar-toggle-btn" onclick="toggleChartSidebar()" title="">
+                    <i class="fas fa-chevron-left"></i> 
                 </button>
                 <!-- Header -->
                 <div class="chart-modal-header">
@@ -1634,8 +1634,8 @@ HTML_TEMPLATE = """
             
             <!-- Área Principal dos Gráficos -->
             <div class="chart-main-area">
-                <button class="sidebar-floating-btn" onclick="toggleChartSidebar()" title="Mostrar painel">
-                    <i class="fas fa-chevron-right"></i> Mostrar Painel
+                <button class="sidebar-floating-btn" onclick="toggleChartSidebar()" title="">
+                    <i class="fas fa-chevron-right"></i> 
                 </button>
                 <!-- Gráficos -->
                 <div class="chart-container-wrapper">
@@ -3596,11 +3596,116 @@ HTML_TEMPLATE = """
                 hideLoadingBar();
             }
             
+            // Carregar configurações salvas do usuário
+            await loadChartConfig();
+            
             // Inicializar gráficos
             setTimeout(() => {
                 initializeAdvancedCharts();
                 startChartUpdates();
             }, 100);
+        }
+
+        // Debounce helper para auto-save
+        let chartConfigSaveTimeout = null;
+        function debouncedSaveChartConfig() {
+            if (chartConfigSaveTimeout) clearTimeout(chartConfigSaveTimeout);
+            chartConfigSaveTimeout = setTimeout(() => saveChartConfig(), 800);
+        }
+
+        // Carregar configurações do gráfico do backend
+        async function loadChartConfig() {
+            try {
+                const response = await fetch('/api/chart-config');
+                const data = await response.json();
+                if (data.status === 'success' && data.config && Object.keys(data.config).length > 0) {
+                    applyChartConfig(data.config);
+                    console.log('[CHART] Configurações carregadas');
+                }
+            } catch (e) {
+                console.log('[CHART] Sem configurações salvas');
+            }
+        }
+
+        // Aplicar configurações nos inputs
+        function applyChartConfig(config) {
+            if (config.symbol) {
+                const dropdown = document.getElementById('symbol-dropdown');
+                if (dropdown) dropdown.value = config.symbol;
+                currentChartSymbol = config.symbol;
+            }
+            if (config.hull !== undefined) {
+                const cb = document.getElementById('ind-hull');
+                if (cb) cb.checked = config.hull;
+            }
+            if (config.hullPeriod) {
+                const slider = document.getElementById('hull-period');
+                const display = document.getElementById('hull-period-value');
+                if (slider) slider.value = config.hullPeriod;
+                if (display) display.textContent = config.hullPeriod;
+            }
+            if (config.zscore !== undefined) {
+                const cb = document.getElementById('ind-zscore');
+                if (cb) cb.checked = config.zscore;
+            }
+            if (config.zscorePeriod) {
+                const slider = document.getElementById('zscore-period');
+                const display = document.getElementById('zscore-period-value');
+                if (slider) slider.value = config.zscorePeriod;
+                if (display) display.textContent = config.zscorePeriod;
+            }
+            if (config.rsi !== undefined) {
+                const cb = document.getElementById('ind-rsi');
+                if (cb) cb.checked = config.rsi;
+            }
+            if (config.rsiPeriod) {
+                const slider = document.getElementById('rsi-period');
+                const display = document.getElementById('rsi-period-value');
+                if (slider) slider.value = config.rsiPeriod;
+                if (display) display.textContent = config.rsiPeriod;
+            }
+            if (config.frequency) {
+                const select = document.getElementById('chart-update-frequency');
+                if (select) select.value = config.frequency;
+            }
+            if (config.showPoints !== undefined) {
+                const cb = document.getElementById('show-points');
+                if (cb) cb.checked = config.showPoints;
+            }
+        }
+
+        // Coletar configurações atuais dos inputs
+        function collectChartConfig() {
+            const dropdown = document.getElementById('symbol-dropdown');
+            return {
+                symbol: currentChartSymbol || (dropdown ? dropdown.value : ''),
+                hull: document.getElementById('ind-hull')?.checked || false,
+                hullPeriod: parseInt(document.getElementById('hull-period')?.value) || 180,
+                zscore: document.getElementById('ind-zscore')?.checked || false,
+                zscorePeriod: parseInt(document.getElementById('zscore-period')?.value) || 150,
+                rsi: document.getElementById('ind-rsi')?.checked || false,
+                rsiPeriod: parseInt(document.getElementById('rsi-period')?.value) || 14,
+                frequency: document.getElementById('chart-update-frequency')?.value || '5000',
+                showPoints: document.getElementById('show-points')?.checked || false
+            };
+        }
+
+        // Salvar configurações no backend
+        async function saveChartConfig() {
+            try {
+                const config = collectChartConfig();
+                const response = await fetch('/api/chart-config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    console.log('[CHART] Configurações salvas');
+                }
+            } catch (e) {
+                console.log('[CHART] Erro ao salvar configurações:', e);
+            }
         }
         
         // Função para fechar modal de gráficos
@@ -4181,6 +4286,7 @@ HTML_TEMPLATE = """
                         currentChartSymbol = this.value;
                         console.log(`[CHARTS] Mudando para símbolo: ${currentChartSymbol}`);
                         saveChartSettings();
+                        debouncedSaveChartConfig();
                         
                         if (document.getElementById('advanced-chart-modal').style.display === 'block') {
                             initializeAdvancedCharts();
@@ -4204,6 +4310,7 @@ HTML_TEMPLATE = """
                         if (symbolDropdown) symbolDropdown.value = '';
                         
                         saveChartSettings();
+                        debouncedSaveChartConfig();
                         
                         if (document.getElementById('advanced-chart-modal').style.display === 'block') {
                             initializeAdvancedCharts();
@@ -4228,6 +4335,7 @@ HTML_TEMPLATE = """
                     
                     // Salvar no localStorage
                     localStorage.setItem('chartUpdateFrequency', newFrequency);
+                    debouncedSaveChartConfig();
                     
                     console.log(`[CHARTS] Frequência de atualização alterada para: ${newFrequency}ms`);
                     
@@ -4263,6 +4371,22 @@ HTML_TEMPLATE = """
                         }
                         // Salvar configurações
                         saveChartSettings();
+                        debouncedSaveChartConfig();
+                    });
+                }
+            });
+            
+            // Checkboxes de indicadores - auto-save
+            const indicatorCheckboxes = ['ind-hull', 'ind-zscore', 'ind-rsi', 'show-points'];
+            indicatorCheckboxes.forEach(id => {
+                const cb = document.getElementById(id);
+                if (cb) {
+                    cb.addEventListener('change', function() {
+                        console.log(`[CHARTS] Indicador alterado: ${id} = ${this.checked}`);
+                        debouncedSaveChartConfig();
+                        if (document.getElementById('advanced-chart-modal').style.display === 'block') {
+                            initializeAdvancedCharts();
+                        }
                     });
                 }
             });
@@ -4630,6 +4754,41 @@ def get_status():
         'last_update': latest_data.get('received_at', 'N/A'),
         'server_time': datetime.datetime.now().isoformat()
     })
+
+# ==================== ROTAS - CONFIGURAÇÕES DO GRÁFICO AVANÇADO ====================
+
+@app.route('/api/chart-config', methods=['GET'])
+def get_chart_config():
+    """Carrega configurações do gráfico avançado do usuário"""
+    user_email = session.get('user_email')
+    if not user_email:
+        return jsonify({'status': 'error', 'message': 'Nao autenticado'}), 401
+    
+    config = get_user_chart_config(user_email)
+    return jsonify({
+        'status': 'success',
+        'config': config or {}
+    })
+
+@app.route('/api/chart-config', methods=['POST'])
+def save_chart_config():
+    """Salva configurações do gráfico avançado do usuário"""
+    user_email = session.get('user_email')
+    if not user_email:
+        return jsonify({'status': 'error', 'message': 'Nao autenticado'}), 401
+    
+    try:
+        config = request.get_json()
+        if not config:
+            return jsonify({'status': 'error', 'message': 'Configuracao invalida'}), 400
+        
+        success = save_user_chart_config(user_email, config)
+        if success:
+            return jsonify({'status': 'success', 'message': 'Configuracao salva'})
+        else:
+            return jsonify({'status': 'error', 'message': 'Erro ao salvar'}), 500
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 # ==================== NOVAS ROTAS - GRÁFICOS DE PREÇO ====================
 
