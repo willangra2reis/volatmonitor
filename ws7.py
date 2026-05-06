@@ -969,14 +969,21 @@ HTML_TEMPLATE = """
         }
         
         /* Modal de Gráficos Avançados */
+        #advanced-chart-modal {
+            overflow: hidden;
+        }
+
         #advanced-chart-modal .modal-content {
             width: 98%;
-            height: 115vh;
+            height: 100vh;
+            max-height: 100vh;
             max-width: none;
+            margin: 0 auto;
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             border: 1px solid rgba(76, 175, 80, 0.3);
             display: flex;
             flex-direction: row;
+            overflow: hidden;
         }
         
         .dark-mode #advanced-chart-modal .modal-content {
@@ -986,6 +993,7 @@ HTML_TEMPLATE = """
         /* Sidebar Esquerda */
         .chart-sidebar {
             width: 280px;
+            height: 100%;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             border-right: 2px solid rgba(76, 175, 80, 0.3);
             display: flex;
@@ -1448,6 +1456,8 @@ HTML_TEMPLATE = """
             #advanced-chart-modal .modal-content {
                 width: 100%;
                 height: 100vh;
+                max-height: 100vh;
+                overflow: hidden;
             }
             
             .chart-toolbar {
