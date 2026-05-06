@@ -999,6 +999,12 @@ HTML_TEMPLATE = """
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .chart-sidebar::-webkit-scrollbar {
+            display: none;
         }
         
         .dark-mode .chart-sidebar {
@@ -1323,6 +1329,12 @@ HTML_TEMPLATE = """
             display: flex;
             flex-direction: column;
             gap: 15px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .chart-container-wrapper::-webkit-scrollbar {
+            display: none;
         }
         
         .chart-section {
@@ -3757,9 +3769,12 @@ HTML_TEMPLATE = """
                 
                 // Atualizar gráfico de RSI se necessário
                 const rsiCheckbox = document.getElementById('ind-rsi');
+                const rsiSection = document.getElementById('rsi-section');
                 if (rsiCheckbox && rsiCheckbox.checked) {
-                    document.getElementById('rsi-section').style.display = 'block';
+                    if (rsiSection) rsiSection.style.display = 'block';
                     createRSIChart(indicatorData);
+                } else if (rsiSection) {
+                    rsiSection.style.display = 'none';
                 }
                 
                 console.log('[CHARTS] Gráficos inicializados');
@@ -4395,7 +4410,19 @@ HTML_TEMPLATE = """
                         console.log(`[CHARTS] Indicador alterado: ${id} = ${this.checked}`);
                         debouncedSaveChartConfig();
                         if (document.getElementById('advanced-chart-modal').style.display === 'block') {
-                            initializeAdvancedCharts();
+                            if (id === 'ind-rsi') {
+                                // Mostrar/ocultar RSI diretamente sem refazer fetch
+                                const rsiSection = document.getElementById('rsi-section');
+                                if (rsiSection) {
+                                    rsiSection.style.display = this.checked ? 'block' : 'none';
+                                    if (this.checked && !rsiChartGlobal) {
+                                        // Recriar RSI se necessário (dados já existem)
+                                        initializeAdvancedCharts();
+                                    }
+                                }
+                            } else {
+                                initializeAdvancedCharts();
+                            }
                         }
                     });
                 }
